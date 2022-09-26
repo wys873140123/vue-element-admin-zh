@@ -212,7 +212,7 @@ If you find this project useful, you can buy author a glass of juice :tropical_d
 
 [Buy me a coffee](https://www.buymeacoffee.com/Pan)
 
-## Browsers support
+## Browsers support111111
 
 Modern browsers and Internet Explorer 10+.
 
