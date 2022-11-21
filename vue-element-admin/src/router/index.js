@@ -130,6 +130,42 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
+    path: '/coagulationBath',
+    component: Layout,
+    redirect: '/coagulationBath/dataStatistics',
+    alwaysShow: true, // will always show the root menu
+    name: 'dataStatistics',
+    meta: {
+      title: '数据统计',
+      noCache:true,
+      icon: 'list',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'dataStatistics',
+        component: () => import('@/views/coagulationBath/dataStatistics'),
+        name: 'dataStatistics',
+        meta: {
+          title: '数据统计',
+          noCache:true,
+          roles: ['admin'], // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'dataManagement',
+        component: () => import('@/views/coagulationBath/dataManagement'),
+        name: 'dataManagement',
+        meta: {
+          title: '缺陷管理',
+          noCache:true,
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },
+      
+    ]
+  },
+  {
     path: '/permission',
     component: Layout,
     redirect: '/permission/page',
