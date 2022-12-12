@@ -1,92 +1,75 @@
 <template>
     <div class="page">
         <el-row :gutter="40">
-            <el-col :span="20">
+            <el-col :span="18">
                 <div class="">
-                   <div class="btn_add">新增缺陷</div>
+                  <el-button type="primary">入库</el-button>
+                  <el-button type="primary">出库</el-button>
+         
+                  
                 </div>
                  <div class="table">
                     <el-table
                         :data="tableData"
                         stripe
-                        style="width: 100%">
+                        border
+                        :default-sort = "{prop: 'index', order: 'descending'}"
+                        style="width: 100%"
+                        height="600"
+                        >
                         <el-table-column
-                        type="index"
+                        prop="index"
+                        fixed
                         label="序号"
+                        sortable
+                        align="center"
                         width="80">
+                         <template slot-scope="scope">
+                            <span>{{ scope.row.index}}层</span>
+                        </template>
                         </el-table-column>
                         <el-table-column
-                        prop="name"
-                        label="缺陷名称"
-                        min-width="200"
+                        :label="item.name"
+                        min-width="120"
+                        v-for="item in titleData" :key="item.index"
                         show-overflow-tooltip>
-                        </el-table-column>
-                        <el-table-column
-                        prop="category"
-                        label="缺陷分类"
-                        min-width="200">
-                        </el-table-column>
-                        <el-table-column
-                        prop="count"
-                        label="已产生数量"
-                        width="150"
-                        show-overflow-tooltip>
-                        </el-table-column>                       
-                        <el-table-column
-                        label="缺陷状态"
-                        width="150">
                         <template slot-scope="scope">
-                            <span :class="scope.row.state==true?'font_green':'font_red'">{{ scope.row.state==true?'启用':'未启用' }}</span>
+                            <span>{{  scope.row.goods[item.index-1]}}</span>
                         </template>
                         </el-table-column>
-                         <el-table-column
-                        label="缺陷状态管理"
-                        width="150">
-                        <template slot-scope="scope">
-                            <el-switch
-                                v-model="scope.row.state">
-                            </el-switch>
-                        </template>
-                        </el-table-column>
-                         <el-table-column
-                        prop="createPerson"
-                        label="创建人"
-                        width="250"
-                        show-overflow-tooltip>
-                        </el-table-column>    
-                         <el-table-column
-                        prop="createTime"
-                        label="创建时间"
-                        width="200"
-                        show-overflow-tooltip>
-                        </el-table-column>    
-                         <el-table-column
-                        prop="operation"
-                        label="操作"
-                        width="200"
-                        show-overflow-tooltip>
-                         <template>
-                           <span class="btn_edit font_green">编辑</span>
-                           <span class="btn_del font_red">删除</span>
-                        </template>
-                        </el-table-column>       
+                       
                     </el-table>
-                    <div class="pagination">
-                        <el-pagination
-                            @size-change="handleSizeChange"
-                            @current-change="handleCurrentChange"
-                            :current-page="currentPage4"
-                            :page-sizes="[10, 20, 30, 40]"
-                            :page-size="20"
-                            layout="total, sizes, prev, pager, next, jumper"
-                            :total="400">
-                        </el-pagination>
-                    </div>
-                        
+                                            
                 </div>
             </el-col>
-            <el-col :span="4">
-           
+            <el-col :span="6">
+                    <div class="rightContent">
+                        <div class="inputGroup">
+                            <div>
+                                 <span>行：
+                                    <el-input
+                                    class="inputStyle"
+                                    placeholder="请输入行数"
+                                    v-model="line"
+                                    :disabled="editFlag">
+                                    </el-input>
+                                </span>
+                            </div>
+                            <div>
+                                <span>列：
+                                    <el-input
+                                    class="inputStyle"
+                                    placeholder="请输入列数"
+                                    v-model="column"
+                                    :disabled="editFlag">
+                                    </el-input>
+                                </span>
+                            </div>
+                            
+                            <el-button type="primary" class="btn_edit" @click="btn_editRow" v-if="editFlag==true">修改</el-button>
+                            <el-button type="danger" class="btn_edit" @click="btn_sureRow" v-if="editFlag==false">确认</el-button>
+                        </div>                       
+                  </div>
             </el-col>
         </el-row>
       
@@ -100,36 +83,78 @@ export default {
   components: { },
   data() {
     return {   
-         tableData: [{
-          name: '缠丝',
-          category: 'XXXX',
-          count: '99',
-          state:true,
-          createPerson:"张三",
-          createTime:'2022-10-13 09:22:09'
-        },{
-         name: '缠丝',
-          category: 'XXXX',
-          count: '99',
-          state:false,
-          createPerson:"张三",
-          createTime:'2022-10-13 09:22:09'
-        },],
-         currentPage4: 1
+         tableData: [
+            {
+                index:'1',
+                goods:[
+                    {
+                        index:'11',
+                        name:'书签',
+                        count:99
+                    },
+                    {
+                        index:'12',
+                        name:'书签',
+                        count:99
+                    }
+                ],
+
+            },
+            { 
+                index:'2',
+                goods:[
+                    {
+                        index:'21',
+                        name:'书签',
+                        count:99
+                    },
+                    {
+                        index:'22',
+                        name:'书签',
+                        count:99
+                    }
+                ],
+            },
+        ],
+        titleData:[
+            {
+                index:1,
+                name:'第一列'
+            }           
+         ],
+         editFlag:true,
+         column:20,
+         line:10,
     }
   },
   computed: {
   },
   mounted(){
+    this.initTitle();
+    this.initTable();
+  
   },
   methods: {
-     handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+      initTitle(){
+        this.titleData=[];
+        for(let i=0;i<this.column;i++){
+            this.titleData.push({
+                index:i+1,
+                name:'第'+(i+1)+'列'
+            })
+        }
       },
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
+      initTable(){
+        // for(let i=0;i<line;i++){
+            
+        // }
       },
-      
+      btn_editRow(){
+        this.editFlag=false;
+      },
+      btn_sureRow(){
+        this.editFlag=true;
+      },
   },
 }
 </script>
@@ -139,18 +164,7 @@ export default {
         padding-left: 40px;
         padding-right: 40rpx;
         padding-top: 20px;
-        .btn_add{
-            background-color: deepskyblue;
-            text-align: center;
-            color: white;
-            width: 120px;
-            height:40px;
-            line-height: 40px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 1px 1px 1px 1px #dedede;
-        }
+        
         .table{
             margin-top: 40px;
             .table_name{
@@ -175,7 +189,22 @@ export default {
                 cursor: pointer;
             }
         }
-      
+      .rightContent{
+        margin-top: 80px;
+        width: 90%;
+        border: 1px solid #dfe6ec;
+        padding: 20px;
+        .inputGroup{
+            .inputStyle{
+                width: 140px;
+                margin-bottom: 20px;
+            }
+            .btn_edit{
+                margin-left: 40px;
+                width: 140px;
+            }
+        }
+      }
        
     }
 </style>
